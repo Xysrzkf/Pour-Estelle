@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour Estelle ❤️</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Georgia', serif;
+        background: #000;
+        color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    /* --- ARRIÈRE-PLANS (Plus nets et plus lumineux) --- */
+    .bg-layer {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: -2;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+        
+        /* C'est ici que j'ai réduit le flou pour qu'on voie mieux les visages */
+        filter: blur(3px) brightness(0.75); 
+        transform: scale(1.05);
+    }
+
+    .bg-layer.active {
+        opacity: 1;
+        z-index: -1;
+    }
+
+    .container {
+        max-width: 600px;
+        width: 85%;
+        padding: 40px;
+        /* Fond du texte un peu plus sombre pour compenser la clarté des photos */
+        background: rgba(15, 10, 15, 0.8); 
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        z-index: 10;
+        transition: all 0.5s;
+    }
+
+    h1 { color: #ffcad4; margin-bottom: 20px; font-weight: normal; }
+
+    button {
+        margin-top: 20px;
+        padding: 12px 30px;
+        font-size: 16px;
+        background: #b23a48;
+        border: 1px solid #ffb3c1;
+        border-radius: 50px;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    button:hover { background: #ff4d6d; transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 77, 109, 0.5); }
+
+    .card {
+        margin: 15px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 179, 193, 0.3);
+        border-radius: 10px;
+        cursor: pointer;
+        color: #ffb3c1;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .card:hover { background: rgba(255, 255, 255, 0.2); border-color: #ffb3c1; }
+
+    textarea {
+        width: 100%;
+        height: 80px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #b23a48;
+        border-radius: 8px;
+        color: white;
+        padding: 12px;
+        margin-top: 15px;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    #typewriter { font-style: italic; margin-top: 20px; min-height: 50px; color: #fff; }
+    .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer active" id="bg1" style="background-image: url('1.JPG');"></div>
+<div class="bg-layer" id="bg2"></div>
+
+<audio id="bgMusic" loop>
+    <source src="Marhoo.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container" id="mainContainer">
+    <div id="intro">
+        <h1>Bonsoir mon cœur... 👋</h1>
+        <p>Je sais que tu ne t'attendais à rien aujourd'hui... mais non.</p>
+        <p>J'ai pensé à toi, comme toujours.</p>
+        <button onclick="start()">Découvrons ça ensemble</button>
+    </div>
+
+    <div id="cards" class="hidden">
+        <p style="color: #ffb3c1;">Choisis une carte, Estelle...</p>
+        <div id="card1" class="card" onclick="chooseCard(1, this)">❤️ Ce que je ne te dis pas assez</div>
+        <div id="card2" class="card" onclick="chooseCard(2, this)">✨ Notre plus beau souvenir</div>
+        <div id="card3" class="card" onclick="chooseCard(3, this)">🚀 Ce que je rêve de bâtir avec toi</div>
+        <div id="typewriter"></div>
+    </div>
+
+    <div id="gageSection" class="hidden">
+        <h2 style="color: #ffb3c1;">Hop hop hop ! 😏</h2>
+        <p>Tu es bien trop gourmande... Pour voir la suite, je veux une petite promesse.</p>
+        <textarea id="gageText" placeholder="Charles attend ta promesse..."></textarea>
+        <br>
+        <button onclick="unlock()">Je le promets</button>
+    </div>
+
+    <div id="valentineQuestion" class="hidden">
+        <h2 style="color: #ffb3c1;">Une dernière chose...</h2>
+        <p>Je sais bien que j'ai un peu de retard sur le calendrier...</p>
+        <p style="font-size: 1.2rem; margin: 20px 0;">Mais m'accorderas-tu l'honneur d'être ma Valentine, malgré tout ? 🌹</p>
+        <button onclick="ending('OUI !')">Oui, mille fois oui</button>
+        <button onclick="ending('Même avec du retard, oui')">Tu es pardonné, oui</button>
+    </div>
+
+    <div id="ending" class="hidden">
+        <h1 style="color: #ffb3c1;">Merci... ❤️</h1>
+        <p>Promesses bien notées. Je saurai m'en souvenir !</p>
+        <p>Je sais que je ne suis pas parfait, ne m'en veux pas si je suis parfois maladroit...</p>
+        <p>J'apprends sur le tas. J'apprends à t'aimer chaque jour un peu mieux.</p>
+        <br>
+        <p style="font-size: 1.5rem;">Bisous.</p>
+    </div>
+</div>
+
+<script>
+    let cardsOpened = 0;
+    const music = document.getElementById("bgMusic");
+    const formEndpoint = "https://formspree.io/f/mbdaogdz";
+
+    // --- SYSTÈME DE CHANGEMENT D'IMAGE (Fondu) ---
+    let activeBg = 1;
+
+    function changeBg(imgNumber) {
+        const current = document.getElementById(`bg${activeBg}`);
+        const nextBgIndex = activeBg === 1 ? 2 : 1;
+        const next = document.getElementById(`bg${nextBgIndex}`);
+
+        next.style.backgroundImage = `url('${imgNumber}.JPG')`;
+        
+        setTimeout(() => {
+            next.classList.add('active');
+            current.classList.remove('active');
+        }, 50);
+
+        activeBg = nextBgIndex;
+    }
+
+    function start() {
+        music.play();
+        changeBg(2); 
+        document.getElementById("intro").style.display = "none";
+        document.getElementById("cards").classList.remove("hidden");
+    }
+
+    function typeWriter(text, i, fnCallback) {
+        if (i < text.length) {
+            document.getElementById("typewriter").innerHTML = text.substring(0, i+1) + '<span style="color:#ffb3c1">|</span>';
+            setTimeout(() => typeWriter(text, i + 1, fnCallback), 40);
+        } else if (typeof fnCallback == 'function') {
+            setTimeout(fnCallback, 1000);
+        }
+    }
+
+    function chooseCard(num, el) {
+        if (el.classList.contains("opened")) return;
+        
+        if (cardsOpened >= 1 && !el.dataset.unlocked) {
+            document.getElementById("cards").classList.add("hidden");
+            document.getElementById("gageSection").classList.remove("hidden");
+            changeBg(6); 
+            window.pendingCard = {num, el}; 
+            return;
+        }
+
+        el.classList.add("opened");
+        el.style.opacity = "0.4";
+        cardsOpened++;
+
+        changeBg(num + 2); 
+
+        let msg = num === 1 ? "Ta patience, ta façon de m'apaiser d'un regard, et cette chance incroyable que j'ai de t'avoir à mes côtés." :
+                  num === 2 ? "Ce moment où on a réalisé que c'était 'nous'. Ce rire partagé, cette complicité unique." :
+                  "Tous ces projets, ces voyages, ce foyer... Demain est encore plus beau parce que tu y es.";
+
+        document.getElementById("typewriter").innerHTML = "";
+        typeWriter(msg, 0, function() {
+            if (cardsOpened === 3) {
+                setTimeout(() => {
+                    document.getElementById("cards").classList.add("hidden");
+                    document.getElementById("valentineQuestion").classList.remove("hidden");
+                    changeBg(7); 
+                }, 2000);
+            }
+        });
+    }
+
+    function unlock() {
+        const val = document.getElementById("gageText").value;
+        if (val.length < 5) return alert("Charles mérite une vraie promesse... 😏");
+
+        fetch(formEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({ message: "Promesse d'Estelle", promesse: val }),
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+        });
+        
+        window.pendingCard.el.dataset.unlocked = "true";
+        document.getElementById("gageSection").classList.add("hidden");
+        document.getElementById("cards").classList.remove("hidden");
+        document.getElementById("gageText").value = ""; 
+        
+        chooseCard(window.pendingCard.num, window.pendingCard.el);
+    }
+
+    function ending(reponse) {
+        fetch(formEndpoint, {
+            method: 'POST',
+            body: JSON.stringify({ message: "Réponse Valentine Estelle", reponse: reponse }),
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+        });
+
+        document.getElementById("valentineQuestion").classList.add("hidden");
+        document.getElementById("ending").classList.remove("hidden");
+
+        // Diaporama final doux
+        let finalSlide = 8;
+        changeBg(8);
+        setInterval(() => {
+            finalSlide++;
+            if (finalSlide > 10) finalSlide = 8;
+            changeBg(finalSlide);
+        }, 5000); 
+    }
+</script>
+</body>
+</html>
