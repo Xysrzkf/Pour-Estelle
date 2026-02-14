@@ -30,7 +30,7 @@
         opacity: 0;
         transition: opacity 1.5s ease-in-out;
         
-        /* C'est ici que j'ai réduit le flou pour qu'on voie mieux les visages */
+        /* Réglage : Flou léger et luminosité */
         filter: blur(3px) brightness(0.75); 
         transform: scale(1.05);
     }
@@ -104,7 +104,7 @@
 </head>
 <body>
 
-<div class="bg-layer active" id="bg1" style="background-image: url('1.JPG');"></div>
+<div class="bg-layer active" id="bg1" style="background-image: url('1.jpg');"></div>
 <div class="bg-layer" id="bg2"></div>
 
 <audio id="bgMusic" loop>
@@ -166,7 +166,8 @@
         const nextBgIndex = activeBg === 1 ? 2 : 1;
         const next = document.getElementById(`bg${nextBgIndex}`);
 
-        next.style.backgroundImage = `url('${imgNumber}.JPG')`;
+        // ICI : Correction de l'extension en .jpg (minuscules)
+        next.style.backgroundImage = `url('${imgNumber}.jpg')`;
         
         setTimeout(() => {
             next.classList.add('active');
